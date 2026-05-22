@@ -1,3 +1,6 @@
+let rankingChart = null;
+let hourChart = null;
+
 function toggleDarkMode() {
   document.body.classList.toggle('dark-mode');
 }
