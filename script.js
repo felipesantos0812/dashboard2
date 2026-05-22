@@ -2,41 +2,41 @@ let rankingChart;
 let pieChart;
 let hourChart;
 
-function toggleDarkMode(){
+function toggleDarkMode() {
   document.body.classList.toggle('dark-mode');
 }
 
-function getStatus(valor){
+function getStatus(valor) {
 
-  if(valor > 1000){
+  if (valor > 1000) {
     return {
-      nome:'Excelente',
-      classe:'excelente'
+      nome: 'Excelente',
+      classe: 'excelente'
     };
   }
 
-  if(valor > 800){
+  if (valor > 800) {
     return {
-      nome:'Bom',
-      classe:'bom'
+      nome: 'Bom',
+      classe: 'bom'
     };
   }
 
-  if(valor < 500){
+  if (valor < 500) {
     return {
-      nome:'Ruim',
-      classe:'ruim'
+      nome: 'Ruim',
+      classe: 'ruim'
     };
   }
 
   return {
-    nome:'Médio',
-    classe:'medio'
+    nome: 'Médio',
+    classe: 'medio'
   };
 
 }
 
-function atualizarTabela(ranking){
+function atualizarTabela(ranking) {
 
   const tabela = document.getElementById(
     'tabelaColaboradores'
@@ -64,7 +64,7 @@ function atualizarTabela(ranking){
 
 }
 
-function atualizarPausas(ranking){
+function atualizarPausas(ranking) {
 
   const container = document.getElementById(
     'pausasContainer'
@@ -72,14 +72,15 @@ function atualizarPausas(ranking){
 
   container.innerHTML = '';
 
-  ranking.slice(0,10).forEach((item,index) => {
+  ranking.slice(0, 10).forEach((item, index) => {
 
     container.innerHTML += `
       <div class="pausa-item">
+
         <strong>${item.nome}</strong>
 
         <div style="margin-top:5px;color:#6b7280;">
-          Pausa: 12:${String(index).padStart(2,'0')} às 13:00
+          Pausa estimada: 12:${String(index).padStart(2, '0')} às 13:00
         </div>
 
       </div>
@@ -89,31 +90,36 @@ function atualizarPausas(ranking){
 
 }
 
-function atualizarGraficos(ranking){
+function atualizarGraficos(ranking, horas) {
 
   const nomes = ranking.map(r => r.nome);
 
   const valores = ranking.map(r => r.total);
 
-  if(rankingChart) rankingChart.destroy();
-  if(pieChart) pieChart.destroy();
-  if(hourChart) hourChart.destroy();
+  if (rankingChart) rankingChart.destroy();
+  if (pieChart) pieChart.destroy();
+  if (hourChart) hourChart.destroy();
 
   rankingChart = new Chart(
     document.getElementById('rankingChart'),
     {
-      type:'bar',
+      type: 'bar',
 
-      data:{
-        labels:nomes,
+      data: {
+        labels: nomes,
 
-        datasets:[{
-          label:'Pedidos Bipados',
-          data:valores,
-          backgroundColor:'#2563eb',
-          borderRadius:10
+        datasets: [{
+          label: 'Pedidos Bipados',
+          data: valores,
+          backgroundColor: '#2563eb',
+          borderRadius: 10
         }]
+      },
+
+      options: {
+        responsive: true
       }
+
     }
   );
 
@@ -124,16 +130,16 @@ function atualizarGraficos(ranking){
 
   ranking.forEach(item => {
 
-    if(item.total > 1000){
+    if (item.total > 1000) {
       excelente++;
     }
-    else if(item.total > 800){
+    else if (item.total > 800) {
       bom++;
     }
-    else if(item.total < 500){
+    else if (item.total < 500) {
       ruim++;
     }
-    else{
+    else {
       medio++;
     }
 
@@ -142,25 +148,25 @@ function atualizarGraficos(ranking){
   pieChart = new Chart(
     document.getElementById('pieChart'),
     {
-      type:'doughnut',
+      type: 'doughnut',
 
-      data:{
-        labels:[
+      data: {
+        labels: [
           'Excelente',
           'Bom',
           'Médio',
           'Ruim'
         ],
 
-        datasets:[{
-          data:[
+        datasets: [{
+          data: [
             excelente,
             bom,
             medio,
             ruim
           ],
 
-          backgroundColor:[
+          backgroundColor: [
             '#16a34a',
             '#d97706',
             '#6b7280',
@@ -174,42 +180,19 @@ function atualizarGraficos(ranking){
   hourChart = new Chart(
     document.getElementById('hourChart'),
     {
-      type:'line',
+      type: 'line',
 
-      data:{
-        labels:[
-          '09h',
-          '10h',
-          '11h',
-          '12h',
-          '13h',
-          '14h',
-          '15h',
-          '16h',
-          '17h',
-          '18h'
-        ],
+      data: {
+        labels: Object.keys(horas),
 
-        datasets:[{
-          label:'Pedidos por Hora',
+        datasets: [{
+          label: 'Pedidos por Hora',
+          data: Object.values(horas),
 
-          data:[
-            120,
-            240,
-            320,
-            410,
-            380,
-            510,
-            640,
-            700,
-            580,
-            430
-          ],
-
-          borderColor:'#2563eb',
-          backgroundColor:'rgba(37,99,235,0.2)',
-          fill:true,
-          tension:.4
+          borderColor: '#2563eb',
+          backgroundColor: 'rgba(37,99,235,0.2)',
+          fill: true,
+          tension: .4
         }]
       }
     }
@@ -217,79 +200,118 @@ function atualizarGraficos(ranking){
 
 }
 
-function carregarCSV(){
+function carregarCSV() {
 
   Papa.parse('./produtividade.csv', {
 
-    download:true,
+    download: true,
 
-    header:true,
+    header: true,
 
-    delimiter:';',
+    delimiter: ';',
 
-    encoding:'UTF-8',
+    skipEmptyLines: true,
 
-    skipEmptyLines:true,
+    encoding: 'UTF-8',
 
-    complete:function(results){
-
-      console.log(results);
+    complete: function(results) {
 
       const dados = results.data;
 
       const colaboradores = {};
+
+      const horas = {
+        '09h': 0,
+        '10h': 0,
+        '11h': 0,
+        '12h': 0,
+        '13h': 0,
+        '14h': 0,
+        '15h': 0,
+        '16h': 0,
+        '17h': 0,
+        '18h': 0
+      };
 
       dados.forEach(item => {
 
         const keys = Object.keys(item);
 
         let nome = '';
+        let dataHora = '';
 
         keys.forEach(key => {
 
           const coluna = key
+            .replace(/\uFEFF/g, '')
             .normalize('NFD')
-            .replace(/[\u0300-\u036f]/g,'');
+            .replace(/[\u0300-\u036f]/g, '');
 
-          if(
-            coluna.includes('Nome') ||
-            coluna.includes('Usuario') ||
-            coluna.includes('Operador')
-          ){
+          if (
+            coluna.includes('Nome do Usuario')
+          ) {
+
             nome = item[key];
+
+          }
+
+          if (
+            coluna.includes('Data e Hora')
+          ) {
+
+            dataHora = item[key];
+
           }
 
         });
 
-        if(!nome) return;
+        if (!nome) return;
 
         nome = nome.trim();
 
-        if(!colaboradores[nome]){
+        if (!colaboradores[nome]) {
           colaboradores[nome] = 0;
         }
 
         colaboradores[nome]++;
 
+        if (dataHora) {
+
+          const partes = dataHora.split(' ');
+
+          if (partes.length > 1) {
+
+            const horaCompleta = partes[1];
+
+            const hora = horaCompleta.split(':')[0] + 'h';
+
+            if (horas[hora] !== undefined) {
+              horas[hora]++;
+            }
+
+          }
+
+        }
+
       });
 
       const ranking = Object.entries(colaboradores)
 
-      .map(([nome,total]) => ({
+      .map(([nome, total]) => ({
         nome,
         total
       }))
 
-      .sort((a,b) => b.total - a.total);
+      .sort((a, b) => b.total - a.total);
 
       const totalPedidos = ranking.reduce(
-        (acc,item) => acc + item.total,
+        (acc, item) => acc + item.total,
         0
       );
 
       const media = ranking.length
-      ? Math.round(totalPedidos / ranking.length)
-      : 0;
+        ? Math.round(totalPedidos / ranking.length)
+        : 0;
 
       const abaixoMeta = ranking.filter(
         item => item.total < 500
@@ -315,14 +337,14 @@ function carregarCSV(){
 
       atualizarPausas(ranking);
 
-      atualizarGraficos(ranking);
+      atualizarGraficos(ranking, horas);
 
     },
 
-    error:function(error){
+    error: function(error) {
 
       console.error(
-        'ERRO CSV:',
+        'Erro CSV:',
         error
       );
 
