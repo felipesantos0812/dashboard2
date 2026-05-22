@@ -14,9 +14,14 @@ Papa.parse('./produtividade.csv', {
 
   complete: function(results) {
 
-    console.log(results.data[0]);
-
     const dados = results.data;
+
+    console.log(dados[0]);
+
+    if (!dados.length) {
+      alert('CSV vazio');
+      return;
+    }
 
     const colaboradores = {};
 
@@ -35,22 +40,40 @@ Papa.parse('./produtividade.csv', {
 
     dados.forEach(item => {
 
-      const nome =
-        item['Nome do Usu�rio'];
+      const chaves =
+        Object.keys(item);
 
-      const dataHora =
-        item['Data e Hora'];
+      let nome = '';
+      let dataHora = '';
+
+      chaves.forEach(chave => {
+
+        const chaveLimpa =
+          chave.toLowerCase();
+
+        if (
+          chaveLimpa.includes('nome')
+        ) {
+          nome = item[chave];
+        }
+
+        if (
+          chaveLimpa.includes('data')
+        ) {
+          dataHora = item[chave];
+        }
+
+      });
 
       if (!nome) return;
 
-      const nomeLimpo =
-        String(nome).trim();
+      nome = String(nome).trim();
 
-      if (!colaboradores[nomeLimpo]) {
-        colaboradores[nomeLimpo] = 0;
+      if (!colaboradores[nome]) {
+        colaboradores[nome] = 0;
       }
 
-      colaboradores[nomeLimpo]++;
+      colaboradores[nome]++;
 
       if (dataHora) {
 
