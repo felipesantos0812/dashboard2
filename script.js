@@ -2,6 +2,37 @@ function toggleDarkMode() {
   document.body.classList.toggle('dark-mode');
 }
 
+function atualizarRelogio() {
+
+  const agora = new Date();
+
+  const hora =
+    agora.toLocaleTimeString(
+      'pt-BR'
+    );
+
+  const data =
+    agora.toLocaleDateString(
+      'pt-BR'
+    );
+
+  document.getElementById(
+    'clock'
+  ).innerText = hora;
+
+  document.getElementById(
+    'date'
+  ).innerText = data;
+
+}
+
+setInterval(
+  atualizarRelogio,
+  1000
+);
+
+atualizarRelogio();
+
 Papa.parse('./produtividade.csv', {
 
   download: true,
@@ -15,13 +46,6 @@ Papa.parse('./produtividade.csv', {
   complete: function(results) {
 
     const dados = results.data;
-
-    console.log(dados[0]);
-
-    if (!dados.length) {
-      alert('CSV vazio');
-      return;
-    }
 
     const colaboradores = {};
 
@@ -86,7 +110,7 @@ Papa.parse('./produtividade.csv', {
             partes[1];
 
           const hora =
-            horaCompleta.substring(0, 2) + 'h';
+            horaCompleta.substring(0,2) + 'h';
 
           if (horas[hora] !== undefined) {
             horas[hora]++;
@@ -101,41 +125,23 @@ Papa.parse('./produtividade.csv', {
     const ranking =
       Object.entries(colaboradores)
 
-      .map(([nome, total]) => ({
+      .map(([nome,total]) => ({
         nome,
         total
       }))
 
-      .sort((a, b) =>
+      .sort((a,b) =>
         b.total - a.total
       );
-
-    console.log(ranking);
-
-    const totalPedidos =
-      ranking.reduce(
-        (acc, item) =>
-          acc + item.total,
-        0
-      );
-
-    const media =
-      ranking.length
-      ? Math.round(
-          totalPedidos /
-          ranking.length
-        )
-      : 0;
-
-    const abaixoMeta =
-      ranking.filter(
-        item => item.total < 500
-      ).length;
 
     document.getElementById(
       'kpiTotal'
     ).innerText =
-      totalPedidos;
+      ranking.reduce(
+        (acc,item) =>
+          acc + item.total,
+        0
+      );
 
     document.getElementById(
       'kpiTop'
@@ -145,12 +151,20 @@ Papa.parse('./produtividade.csv', {
     document.getElementById(
       'kpiMedia'
     ).innerText =
-      media;
+      Math.round(
+        ranking.reduce(
+          (acc,item)=>
+            acc + item.total,
+          0
+        ) / ranking.length
+      );
 
     document.getElementById(
       'kpiRuim'
     ).innerText =
-      abaixoMeta;
+      ranking.filter(
+        item => item.total < 500
+      ).length;
 
     const tabela =
       document.getElementById(
@@ -161,6 +175,23 @@ Papa.parse('./produtividade.csv', {
 
     ranking.forEach(item => {
 
+      let status = 'Médio';
+
+      let classe = 'medio';
+
+      if(item.total > 1000){
+        status = 'Excelente';
+        classe = 'excelente';
+      }
+      else if(item.total > 800){
+        status = 'Bom';
+        classe = 'bom';
+      }
+      else if(item.total < 500){
+        status = 'Ruim';
+        classe = 'ruim';
+      }
+
       tabela.innerHTML += `
         <tr>
 
@@ -169,15 +200,9 @@ Papa.parse('./produtividade.csv', {
           <td>${item.total}</td>
 
           <td>
-            ${
-              item.total > 1000
-              ? 'Excelente'
-              : item.total > 800
-              ? 'Bom'
-              : item.total < 500
-              ? 'Ruim'
-              : 'Médio'
-            }
+            <span class="status ${classe}">
+              ${status}
+            </span>
           </td>
 
         </tr>
@@ -192,7 +217,7 @@ Papa.parse('./produtividade.csv', {
 
     pausas.innerHTML = '';
 
-    ranking.slice(0, 10).forEach((item, index) => {
+    ranking.slice(0,5).forEach((item,index)=>{
 
       pausas.innerHTML += `
         <div class="pausa-item">
@@ -203,7 +228,7 @@ Papa.parse('./produtividade.csv', {
 
           <div>
             Pausa:
-            12:${String(index).padStart(2, '0')}
+            12:${String(index).padStart(2,'0')}
             às 13:00
           </div>
 
@@ -217,33 +242,41 @@ Papa.parse('./produtividade.csv', {
         'rankingChart'
       ),
       {
-        type: 'bar',
+        type:'bar',
 
-      data: {
+        data:{
 
-  labels:
-    ranking
-      .slice(0, 5)
-      .map(
-        r => r.nome
-      ),
+          labels:
+            ranking
+              .slice(0,5)
+              .map(r => r.nome),
 
-  datasets: [{
+          datasets:[{
 
-    label:
-      'Pedidos Bipados',
+            label:'Pedidos',
 
-    data:
-      ranking
-        .slice(0, 5)
-        .map(
-          r => r.total
-        ),
+            data:
+              ranking
+                .slice(0,5)
+                .map(r => r.total),
 
-            backgroundColor:
-              '#2563eb'
+            backgroundColor:'#2563eb',
+            borderRadius:12
 
           }]
+        },
+
+        options:{
+          responsive:true,
+          plugins:{
+            legend:{
+              labels:{
+                font:{
+                  weight:'bold'
+                }
+              }
+            }
+          }
         }
       }
     );
@@ -253,43 +286,32 @@ Papa.parse('./produtividade.csv', {
         'hourChart'
       ),
       {
-        type: 'line',
+        type:'line',
 
-        data: {
+        data:{
 
           labels:
             Object.keys(horas),
 
-          datasets: [{
+          datasets:[{
 
-            label:
-              'Pedidos por Hora',
+            label:'Pedidos por Hora',
 
             data:
               Object.values(horas),
 
-            borderColor:
-              '#2563eb',
+            borderColor:'#2563eb',
 
             backgroundColor:
-              'rgba(37,99,235,0.2)',
+              'rgba(37,99,235,.2)',
 
-            fill: true,
+            fill:true,
 
-            tension: 0.4
+            tension:.4
 
           }]
         }
       }
-    );
-
-  },
-
-  error: function(err) {
-
-    console.error(
-      'Erro CSV:',
-      err
     );
 
   }
