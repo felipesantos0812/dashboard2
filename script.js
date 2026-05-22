@@ -218,35 +218,6 @@ Papa.parse('./produtividade.csv', {
 
     });
 
-    /* PAUSAS */
-
-    const pausas =
-      document.getElementById(
-        'pausasContainer'
-      );
-
-    pausas.innerHTML = '';
-
-    ranking.slice(0,5).forEach((item,index)=>{
-
-      pausas.innerHTML += `
-        <div class="pausa-item">
-
-          <strong>
-            ${item.nome}
-          </strong>
-
-          <div>
-            Pausa:
-            12:${String(index).padStart(2,'0')}
-            às 13:00
-          </div>
-
-        </div>
-      `;
-
-    });
-
     /* CORES GRAFICO */
 
     const top5 =
