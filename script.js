@@ -14,7 +14,7 @@ Papa.parse('./produtividade.csv', {
 
   complete: function(results) {
 
-    console.log(results.data);
+    console.log(results.data[0]);
 
     const dados = results.data;
 
