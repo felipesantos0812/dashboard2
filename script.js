@@ -117,7 +117,12 @@ function atualizarGraficos(ranking, horas) {
       },
 
       options: {
-        responsive: true
+        responsive: true,
+        plugins: {
+          legend: {
+            display: false
+          }
+        }
       }
 
     }
@@ -216,6 +221,8 @@ function carregarCSV() {
 
     complete: function(results) {
 
+      console.log(results.data[0]);
+
       const dados = results.data;
 
       const colaboradores = {};
@@ -235,59 +242,48 @@ function carregarCSV() {
 
       dados.forEach(item => {
 
-  const dataHora = item['Data e Hora'];
+        const dataHora =
+          item['Data e Hora'];
 
-  const nome = item['Nome do Usuário'];
+        const nome =
+          item['Nome do Usuário'];
 
-  if (!nome) return;
+        const idUsuario =
+          item['IdUsuario'];
 
-  const nomeLimpo = nome.trim();
+        console.log(
+          'NOME:',
+          nome
+        );
 
-  if (!colaboradores[nomeLimpo]) {
-    colaboradores[nomeLimpo] = 0;
-  }
-
-  colaboradores[nomeLimpo]++;
-
-  if (dataHora) {
-
-    const partes = dataHora.split(' ');
-
-    if (partes.length > 1) {
-
-      const horaCompleta = partes[1];
-
-      const hora = horaCompleta.substring(0,2) + 'h';
-
-      if (horas[hora] !== undefined) {
-        horas[hora]++;
-      }
-
-    }
-
-  }
-
-});
+        console.log(
+          'ID:',
+          idUsuario
+        );
 
         if (!nome) return;
 
-        nome = nome.trim();
+        const nomeLimpo =
+          nome.trim();
 
-        if (!colaboradores[nome]) {
-          colaboradores[nome] = 0;
+        if (!colaboradores[nomeLimpo]) {
+          colaboradores[nomeLimpo] = 0;
         }
 
-        colaboradores[nome]++;
+        colaboradores[nomeLimpo]++;
 
         if (dataHora) {
 
-          const partes = dataHora.split(' ');
+          const partes =
+            dataHora.split(' ');
 
           if (partes.length > 1) {
 
-            const horaCompleta = partes[1];
+            const horaCompleta =
+              partes[1];
 
-            const hora = horaCompleta.split(':')[0] + 'h';
+            const hora =
+              horaCompleta.substring(0, 2) + 'h';
 
             if (horas[hora] !== undefined) {
               horas[hora]++;
@@ -327,7 +323,8 @@ function carregarCSV() {
 
       document.getElementById(
         'kpiTop'
-      ).innerText = ranking[0]?.nome || '-';
+      ).innerText =
+        ranking[0]?.nome || '-';
 
       document.getElementById(
         'kpiMedia'
@@ -341,7 +338,10 @@ function carregarCSV() {
 
       atualizarPausas(ranking);
 
-      atualizarGraficos(ranking, horas);
+      atualizarGraficos(
+        ranking,
+        horas
+      );
 
     },
 
