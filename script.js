@@ -235,19 +235,19 @@ function carregarCSV() {
 
       dados.forEach(item => {
 
-  let nome = item['Nome do Usuário'];
+  const dataHora = item['Data e Hora'];
 
-  let dataHora = item['Data e Hora'];
+  const nome = item['Nome do Usuário'];
 
   if (!nome) return;
 
-  nome = nome.trim();
+  const nomeLimpo = nome.trim();
 
-  if (!colaboradores[nome]) {
-    colaboradores[nome] = 0;
+  if (!colaboradores[nomeLimpo]) {
+    colaboradores[nomeLimpo] = 0;
   }
 
-  colaboradores[nome]++;
+  colaboradores[nomeLimpo]++;
 
   if (dataHora) {
 
@@ -257,7 +257,7 @@ function carregarCSV() {
 
       const horaCompleta = partes[1];
 
-      const hora = horaCompleta.split(':')[0] + 'h';
+      const hora = horaCompleta.substring(0,2) + 'h';
 
       if (horas[hora] !== undefined) {
         horas[hora]++;
