@@ -1,123 +1,132 @@
-let rankingChart;
-let pieChart;
-let hourChart;
-
 function toggleDarkMode() {
   document.body.classList.toggle('dark-mode');
 }
 
-function getStatus(valor) {
+Papa.parse('./produtividade.csv', {
 
-  if (valor > 1000) {
-    return {
-      nome: 'Excelente',
-      classe: 'excelente'
-    };
-  }
+  download: true,
 
-  if (valor > 800) {
-    return {
-      nome: 'Bom',
-      classe: 'bom'
-    };
-  }
+  header: true,
 
-  if (valor < 500) {
-    return {
-      nome: 'Ruim',
-      classe: 'ruim'
-    };
-  }
+  delimiter: ';',
 
-  return {
-    nome: 'Médio',
-    classe: 'medio'
-  };
+  skipEmptyLines: true,
 
-}
+  complete: function(results) {
 
-function atualizarTabela(ranking) {
+    const dados = results.data;
 
-  const tabela =
+    console.log(dados[0]);
+
+    const colaboradores = {};
+
+    dados.forEach(item => {
+
+      const keys = Object.keys(item);
+
+      let nome = '';
+
+      keys.forEach(key => {
+
+        const coluna = key
+          .replace(/\uFEFF/g, '')
+          .trim();
+
+        if (
+          coluna.includes('Nome')
+        ) {
+
+          nome = item[key];
+
+        }
+
+      });
+
+      if (!nome) return;
+
+      nome = nome.trim();
+
+      if (!colaboradores[nome]) {
+        colaboradores[nome] = 0;
+      }
+
+      colaboradores[nome]++;
+
+    });
+
+    const ranking =
+      Object.entries(colaboradores)
+
+      .map(([nome, total]) => ({
+        nome,
+        total
+      }))
+
+      .sort((a, b) =>
+        b.total - a.total
+      );
+
     document.getElementById(
-      'tabelaColaboradores'
-    );
+      'kpiTotal'
+    ).innerText =
+      ranking.reduce(
+        (acc, item) =>
+          acc + item.total,
+        0
+      );
 
-  tabela.innerHTML = '';
-
-  ranking.forEach(item => {
-
-    const status =
-      getStatus(item.total);
-
-    tabela.innerHTML += `
-      <tr>
-        <td>${item.nome}</td>
-        <td>${item.total}</td>
-        <td>
-          <span class="status ${status.classe}">
-            ${status.nome}
-          </span>
-        </td>
-      </tr>
-    `;
-
-  });
-
-}
-
-function atualizarPausas(ranking) {
-
-  const container =
     document.getElementById(
-      'pausasContainer'
-    );
+      'kpiTop'
+    ).innerText =
+      ranking[0]?.nome || '-';
 
-  container.innerHTML = '';
+    document.getElementById(
+      'kpiMedia'
+    ).innerText =
+      Math.round(
+        ranking.reduce(
+          (acc, item) =>
+            acc + item.total,
+          0
+        ) / ranking.length
+      );
 
-  ranking
-    .slice(0, 10)
-    .forEach((item, index) => {
+    document.getElementById(
+      'kpiRuim'
+    ).innerText =
+      ranking.filter(
+        item => item.total < 500
+      ).length;
 
-      container.innerHTML += `
-        <div class="pausa-item">
+    const tabela =
+      document.getElementById(
+        'tabelaColaboradores'
+      );
 
-          <strong>${item.nome}</strong>
+    tabela.innerHTML = '';
 
-          <div style="margin-top:5px;color:#6b7280;">
-            Pausa estimada:
-            12:${String(index).padStart(2, '0')}
-            às 13:00
-          </div>
+    ranking.forEach(item => {
 
-        </div>
+      tabela.innerHTML += `
+        <tr>
+          <td>${item.nome}</td>
+          <td>${item.total}</td>
+          <td>
+            ${
+              item.total > 1000
+              ? 'Excelente'
+              : item.total > 800
+              ? 'Bom'
+              : item.total < 500
+              ? 'Ruim'
+              : 'Médio'
+            }
+          </td>
+        </tr>
       `;
 
     });
 
-}
-
-function atualizarGraficos(
-  ranking,
-  horas
-) {
-
-  const nomes =
-    ranking.map(r => r.nome);
-
-  const valores =
-    ranking.map(r => r.total);
-
-  if (rankingChart)
-    rankingChart.destroy();
-
-  if (pieChart)
-    pieChart.destroy();
-
-  if (hourChart)
-    hourChart.destroy();
-
-  rankingChart =
     new Chart(
       document.getElementById(
         'rankingChart'
@@ -126,290 +135,34 @@ function atualizarGraficos(
         type: 'bar',
 
         data: {
-          labels: nomes,
 
-          datasets: [{
-            label:
-              'Pedidos Bipados',
-
-            data: valores,
-
-            backgroundColor:
-              '#2563eb',
-
-            borderRadius: 10
-          }]
-        }
-      }
-    );
-
-  let excelente = 0;
-  let bom = 0;
-  let medio = 0;
-  let ruim = 0;
-
-  ranking.forEach(item => {
-
-    if (item.total > 1000) {
-      excelente++;
-    }
-    else if (item.total > 800) {
-      bom++;
-    }
-    else if (item.total < 500) {
-      ruim++;
-    }
-    else {
-      medio++;
-    }
-
-  });
-
-  pieChart =
-    new Chart(
-      document.getElementById(
-        'pieChart'
-      ),
-      {
-        type: 'doughnut',
-
-        data: {
-          labels: [
-            'Excelente',
-            'Bom',
-            'Médio',
-            'Ruim'
-          ],
-
-          datasets: [{
-            data: [
-              excelente,
-              bom,
-              medio,
-              ruim
-            ],
-
-            backgroundColor: [
-              '#16a34a',
-              '#d97706',
-              '#6b7280',
-              '#dc2626'
-            ]
-          }]
-        }
-      }
-    );
-
-  hourChart =
-    new Chart(
-      document.getElementById(
-        'hourChart'
-      ),
-      {
-        type: 'line',
-
-        data: {
           labels:
-            Object.keys(horas),
+            ranking.map(
+              r => r.nome
+            ),
 
           datasets: [{
             label:
-              'Pedidos por Hora',
+              'Pedidos',
 
             data:
-              Object.values(horas),
-
-            borderColor:
-              '#2563eb',
+              ranking.map(
+                r => r.total
+              ),
 
             backgroundColor:
-              'rgba(37,99,235,0.2)',
-
-            fill: true,
-
-            tension: 0.4
+              '#2563eb'
           }]
         }
       }
     );
 
-}
+  },
 
-function carregarCSV() {
+  error: function(err) {
 
-  Papa.parse(
-    './produtividade.csv',
-    {
+    console.error(err);
 
-      download: true,
+  }
 
-      header: true,
-
-      delimiter: ';',
-
-      skipEmptyLines: true,
-
-      complete: function(results) {
-
-        const dados =
-          results.data;
-
-        console.log(
-          dados[0]
-        );
-
-        const colaboradores = {};
-
-        const horas = {
-          '09h': 0,
-          '10h': 0,
-          '11h': 0,
-          '12h': 0,
-          '13h': 0,
-          '14h': 0,
-          '15h': 0,
-          '16h': 0,
-          '17h': 0,
-          '18h': 0
-        };
-
-        dados.forEach(item => {
-
-          const nome =
-            item['Nome do Usuário'];
-
-          const dataHora =
-            item['Data e Hora'];
-
-          if (!nome) return;
-
-          const nomeLimpo =
-            nome.trim();
-
-          if (
-            !colaboradores[nomeLimpo]
-          ) {
-            colaboradores[nomeLimpo] = 0;
-          }
-
-          colaboradores[nomeLimpo]++;
-
-          if (dataHora) {
-
-            const partes =
-              dataHora.split(' ');
-
-            if (
-              partes.length > 1
-            ) {
-
-              const horaCompleta =
-                partes[1];
-
-              const hora =
-                horaCompleta.substring(
-                  0,
-                  2
-                ) + 'h';
-
-              if (
-                horas[hora] !== undefined
-              ) {
-                horas[hora]++;
-              }
-
-            }
-
-          }
-
-        });
-
-        const ranking =
-          Object.entries(
-            colaboradores
-          )
-
-          .map(
-            ([nome, total]) => ({
-              nome,
-              total
-            })
-          )
-
-          .sort(
-            (a, b) =>
-              b.total - a.total
-          );
-
-        const totalPedidos =
-          ranking.reduce(
-            (acc, item) =>
-              acc + item.total,
-            0
-          );
-
-        const media =
-          ranking.length
-          ? Math.round(
-              totalPedidos /
-              ranking.length
-            )
-          : 0;
-
-        const abaixoMeta =
-          ranking.filter(
-            item =>
-              item.total < 500
-          ).length;
-
-        document.getElementById(
-          'kpiTotal'
-        ).innerText =
-          totalPedidos;
-
-        document.getElementById(
-          'kpiTop'
-        ).innerText =
-          ranking[0]?.nome || '-';
-
-        document.getElementById(
-          'kpiMedia'
-        ).innerText =
-          media;
-
-        document.getElementById(
-          'kpiRuim'
-        ).innerText =
-          abaixoMeta;
-
-        atualizarTabela(
-          ranking
-        );
-
-        atualizarPausas(
-          ranking
-        );
-
-        atualizarGraficos(
-          ranking,
-          horas
-        );
-
-      },
-
-      error: function(error) {
-
-        console.error(
-          'Erro CSV:',
-          error
-        );
-
-      }
-
-    }
-  );
-
-}
-
-window.onload =
-  carregarCSV;
+});
