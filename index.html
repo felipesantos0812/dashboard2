@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
-  <title>Dashboard KPI - Expedição</title>
+  <title>Dashboard Expedição</title>
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
@@ -205,12 +205,12 @@
   <div class="topbar">
 
     <div class="title">
-      <h1>Dashboard KPI - Expedição</h1>
+      <h1>Dashboard Expedição</h1>
       <p>Controle operacional diário</p>
     </div>
 
     <button class="toggle-btn" onclick="toggleDarkMode()">
-      🌙 Claro / Escuro
+    Claro / Escuro
     </button>
 
   </div>
@@ -276,7 +276,7 @@
 
       <div class="info-box">
         <strong>Encerramento</strong>
-        <div class="info-value">17:00</div>
+        <div class="info-value">18:00</div>
       </div>
 
     </div>
@@ -325,21 +325,21 @@
 
     function getStatus(valor){
 
-      if(valor > 1000){
+      if(valor > 800){
         return {
           nome:'Excelente',
           classe:'excelente'
         };
       }
 
-      if(valor > 800){
+      if(valor > 600){
         return {
           nome:'Bom',
           classe:'bom'
         };
       }
 
-      if(valor < 500){
+      if(valor < 400){
         return {
           nome:'Ruim',
           classe:'ruim'
@@ -440,9 +440,9 @@
 
       ranking.forEach(item => {
 
-        if(item.total > 1000) excelente++;
-        else if(item.total > 800) bom++;
-        else if(item.total < 500) ruim++;
+        if(item.total > 800) excelente++;
+        else if(item.total > 600) bom++;
+        else if(item.total < 400) ruim++;
         else medio++;
 
       });
