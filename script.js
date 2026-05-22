@@ -14,43 +14,27 @@ Papa.parse('./produtividade.csv', {
 
   complete: function(results) {
 
-    const dados = results.data;
+    console.log(results.data);
 
-    console.log(dados[0]);
+    const dados = results.data;
 
     const colaboradores = {};
 
     dados.forEach(item => {
 
-      const keys = Object.keys(item);
-
-      let nome = '';
-
-      keys.forEach(key => {
-
-        const coluna = key
-          .replace(/\uFEFF/g, '')
-          .trim();
-
-        if (
-          coluna.includes('Nome')
-        ) {
-
-          nome = item[key];
-
-        }
-
-      });
+      const nome =
+        item['Nome do Usuário'];
 
       if (!nome) return;
 
-      nome = nome.trim();
+      const nomeLimpo =
+        nome.trim();
 
-      if (!colaboradores[nome]) {
-        colaboradores[nome] = 0;
+      if (!colaboradores[nomeLimpo]) {
+        colaboradores[nomeLimpo] = 0;
       }
 
-      colaboradores[nome]++;
+      colaboradores[nomeLimpo]++;
 
     });
 
@@ -110,7 +94,9 @@ Papa.parse('./produtividade.csv', {
       tabela.innerHTML += `
         <tr>
           <td>${item.nome}</td>
+
           <td>${item.total}</td>
+
           <td>
             ${
               item.total > 1000
@@ -142,6 +128,7 @@ Papa.parse('./produtividade.csv', {
             ),
 
           datasets: [{
+
             label:
               'Pedidos',
 
@@ -152,6 +139,7 @@ Papa.parse('./produtividade.csv', {
 
             backgroundColor:
               '#2563eb'
+
           }]
         }
       }
