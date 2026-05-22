@@ -35,16 +35,13 @@ Papa.parse('./produtividade.csv', {
 
     dados.forEach(item => {
 
-      const nome =
-        item['Nome do Usuário'];
+      const nome = item['Nome do Usuário'];
 
-      const dataHora =
-        item['Data e Hora'];
+      const dataHora = item['Data e Hora'];
 
       if (!nome) return;
 
-      const nomeLimpo =
-        nome.trim();
+      const nomeLimpo = nome.trim();
 
       if (!colaboradores[nomeLimpo]) {
         colaboradores[nomeLimpo] = 0;
@@ -54,13 +51,11 @@ Papa.parse('./produtividade.csv', {
 
       if (dataHora) {
 
-        const partes =
-          dataHora.split(' ');
+        const partes = dataHora.split(' ');
 
         if (partes.length > 1) {
 
-          const horaCompleta =
-            partes[1];
+          const horaCompleta = partes[1];
 
           const hora =
             horaCompleta.substring(0, 2) + 'h';
@@ -97,8 +92,7 @@ Papa.parse('./produtividade.csv', {
     const media =
       ranking.length > 0
       ? Math.round(
-          totalPedidos /
-          ranking.length
+          totalPedidos / ranking.length
         )
       : 0;
 
@@ -109,8 +103,7 @@ Papa.parse('./produtividade.csv', {
 
     document.getElementById(
       'kpiTotal'
-    ).innerText =
-      totalPedidos;
+    ).innerText = totalPedidos;
 
     document.getElementById(
       'kpiTop'
@@ -119,13 +112,11 @@ Papa.parse('./produtividade.csv', {
 
     document.getElementById(
       'kpiMedia'
-    ).innerText =
-      media;
+    ).innerText = media;
 
     document.getElementById(
       'kpiRuim'
-    ).innerText =
-      abaixoMeta;
+    ).innerText = abaixoMeta;
 
     const tabela =
       document.getElementById(
@@ -217,65 +208,6 @@ Papa.parse('./produtividade.csv', {
 
             backgroundColor:
               '#2563eb'
-
-          }]
-        }
-      }
-    );
-
-    let excelente = 0;
-    let bom = 0;
-    let medio = 0;
-    let ruim = 0;
-
-    ranking.forEach(item => {
-
-      if (item.total > 1000) {
-        excelente++;
-      }
-      else if (item.total > 800) {
-        bom++;
-      }
-      else if (item.total < 500) {
-        ruim++;
-      }
-      else {
-        medio++;
-      }
-
-    });
-
-    new Chart(
-      document.getElementById(
-        'pieChart'
-      ),
-      {
-        type: 'doughnut',
-
-        data: {
-
-          labels: [
-            'Excelente',
-            'Bom',
-            'Médio',
-            'Ruim'
-          ],
-
-          datasets: [{
-
-            data: [
-              excelente,
-              bom,
-              medio,
-              ruim
-            ],
-
-            backgroundColor: [
-              '#16a34a',
-              '#d97706',
-              '#6b7280',
-              '#dc2626'
-            ]
 
           }]
         }
