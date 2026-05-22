@@ -8,21 +8,21 @@ function toggleDarkMode(){
 
 function getStatus(valor){
 
-  if(valor > 800){
+  if(valor > 1000){
     return {
       nome:'Excelente',
       classe:'excelente'
     };
   }
 
-  if(valor > 600){
+  if(valor > 800){
     return {
       nome:'Bom',
       classe:'bom'
     };
   }
 
-  if(valor < 400){
+  if(valor < 500){
     return {
       nome:'Ruim',
       classe:'ruim'
@@ -124,13 +124,13 @@ function atualizarGraficos(ranking){
 
   ranking.forEach(item => {
 
-    if(item.total > 800){
+    if(item.total > 1000){
       excelente++;
     }
-    else if(item.total > 600){
+    else if(item.total > 800){
       bom++;
     }
-    else if(item.total < 400){
+    else if(item.total < 500){
       ruim++;
     }
     else{
@@ -219,16 +219,21 @@ function atualizarGraficos(ranking){
 
 function carregarCSV(){
 
-  Papa.parse('produtividade.csv', {
+  Papa.parse('./produtividade.csv', {
 
     download:true,
+
     header:true,
-    delimiter:";",
+
+    delimiter:';',
+
+    encoding:'UTF-8',
+
     skipEmptyLines:true,
 
     complete:function(results){
 
-      console.log(results.data);
+      console.log(results);
 
       const dados = results.data;
 
@@ -236,14 +241,29 @@ function carregarCSV(){
 
       dados.forEach(item => {
 
-        const nome =
-          item['Nome do Usuário'] ||
-          item['Nome Usuario'] ||
-          item['Usuário'] ||
-          item['Usuario'] ||
-          item['Operador'];
+        const keys = Object.keys(item);
+
+        let nome = '';
+
+        keys.forEach(key => {
+
+          const coluna = key
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g,'');
+
+          if(
+            coluna.includes('Nome') ||
+            coluna.includes('Usuario') ||
+            coluna.includes('Operador')
+          ){
+            nome = item[key];
+          }
+
+        });
 
         if(!nome) return;
+
+        nome = nome.trim();
 
         if(!colaboradores[nome]){
           colaboradores[nome] = 0;
@@ -272,7 +292,7 @@ function carregarCSV(){
       : 0;
 
       const abaixoMeta = ranking.filter(
-        item => item.total < 400
+        item => item.total < 500
       ).length;
 
       document.getElementById(
@@ -302,7 +322,7 @@ function carregarCSV(){
     error:function(error){
 
       console.error(
-        'Erro ao carregar CSV:',
+        'ERRO CSV:',
         error
       );
 
