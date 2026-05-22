@@ -8,8 +8,7 @@ Papa.parse('./produtividade.csv', {
 
   header: true,
 
-  delimiter: ',',
-encoding: 'ISO-8859-1',
+  delimiter: ';',
 
   skipEmptyLines: true,
 
@@ -36,13 +35,16 @@ encoding: 'ISO-8859-1',
 
     dados.forEach(item => {
 
-      const nome = item['Nome do Usu�rio'];
+      const nome =
+        item['Nome do Usu�rio'];
 
-      const dataHora = item['Data e Hora'];
+      const dataHora =
+        item['Data e Hora'];
 
       if (!nome) return;
 
-      const nomeLimpo = nome.trim();
+      const nomeLimpo =
+        String(nome).trim();
 
       if (!colaboradores[nomeLimpo]) {
         colaboradores[nomeLimpo] = 0;
@@ -52,11 +54,13 @@ encoding: 'ISO-8859-1',
 
       if (dataHora) {
 
-        const partes = dataHora.split(' ');
+        const partes =
+          dataHora.split(' ');
 
         if (partes.length > 1) {
 
-          const horaCompleta = partes[1];
+          const horaCompleta =
+            partes[1];
 
           const hora =
             horaCompleta.substring(0, 2) + 'h';
@@ -83,6 +87,8 @@ encoding: 'ISO-8859-1',
         b.total - a.total
       );
 
+    console.log(ranking);
+
     const totalPedidos =
       ranking.reduce(
         (acc, item) =>
@@ -91,9 +97,10 @@ encoding: 'ISO-8859-1',
       );
 
     const media =
-      ranking.length > 0
+      ranking.length
       ? Math.round(
-          totalPedidos / ranking.length
+          totalPedidos /
+          ranking.length
         )
       : 0;
 
@@ -104,7 +111,8 @@ encoding: 'ISO-8859-1',
 
     document.getElementById(
       'kpiTotal'
-    ).innerText = totalPedidos;
+    ).innerText =
+      totalPedidos;
 
     document.getElementById(
       'kpiTop'
@@ -113,11 +121,13 @@ encoding: 'ISO-8859-1',
 
     document.getElementById(
       'kpiMedia'
-    ).innerText = media;
+    ).innerText =
+      media;
 
     document.getElementById(
       'kpiRuim'
-    ).innerText = abaixoMeta;
+    ).innerText =
+      abaixoMeta;
 
     const tabela =
       document.getElementById(
@@ -131,13 +141,9 @@ encoding: 'ISO-8859-1',
       tabela.innerHTML += `
         <tr>
 
-          <td>
-            ${item.nome}
-          </td>
+          <td>${item.nome}</td>
 
-          <td>
-            ${item.total}
-          </td>
+          <td>${item.total}</td>
 
           <td>
             ${
