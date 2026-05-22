@@ -8,7 +8,8 @@ Papa.parse('./produtividade.csv', {
 
   header: true,
 
-  delimiter: ';',
+  delimiter: ',',
+encoding: 'ISO-8859-1',
 
   skipEmptyLines: true,
 
@@ -35,7 +36,7 @@ Papa.parse('./produtividade.csv', {
 
     dados.forEach(item => {
 
-      const nome = item['Nome do Usuário'];
+      const nome = item['Nome do Usu�rio'];
 
       const dataHora = item['Data e Hora'];
 
