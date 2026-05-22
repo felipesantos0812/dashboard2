@@ -20,10 +20,26 @@ Papa.parse('./produtividade.csv', {
 
     const colaboradores = {};
 
+    const horas = {
+      '09h': 0,
+      '10h': 0,
+      '11h': 0,
+      '12h': 0,
+      '13h': 0,
+      '14h': 0,
+      '15h': 0,
+      '16h': 0,
+      '17h': 0,
+      '18h': 0
+    };
+
     dados.forEach(item => {
 
       const nome =
         item['Nome do Usuário'];
+
+      const dataHora =
+        item['Data e Hora'];
 
       if (!nome) return;
 
@@ -35,6 +51,27 @@ Papa.parse('./produtividade.csv', {
       }
 
       colaboradores[nomeLimpo]++;
+
+      if (dataHora) {
+
+        const partes =
+          dataHora.split(' ');
+
+        if (partes.length > 1) {
+
+          const horaCompleta =
+            partes[1];
+
+          const hora =
+            horaCompleta.substring(0, 2) + 'h';
+
+          if (horas[hora] !== undefined) {
+            horas[hora]++;
+          }
+
+        }
+
+      }
 
     });
 
@@ -50,14 +87,30 @@ Papa.parse('./produtividade.csv', {
         b.total - a.total
       );
 
-    document.getElementById(
-      'kpiTotal'
-    ).innerText =
+    const totalPedidos =
       ranking.reduce(
         (acc, item) =>
           acc + item.total,
         0
       );
+
+    const media =
+      ranking.length > 0
+      ? Math.round(
+          totalPedidos /
+          ranking.length
+        )
+      : 0;
+
+    const abaixoMeta =
+      ranking.filter(
+        item => item.total < 500
+      ).length;
+
+    document.getElementById(
+      'kpiTotal'
+    ).innerText =
+      totalPedidos;
 
     document.getElementById(
       'kpiTop'
@@ -67,20 +120,12 @@ Papa.parse('./produtividade.csv', {
     document.getElementById(
       'kpiMedia'
     ).innerText =
-      Math.round(
-        ranking.reduce(
-          (acc, item) =>
-            acc + item.total,
-          0
-        ) / ranking.length
-      );
+      media;
 
     document.getElementById(
       'kpiRuim'
     ).innerText =
-      ranking.filter(
-        item => item.total < 500
-      ).length;
+      abaixoMeta;
 
     const tabela =
       document.getElementById(
@@ -93,9 +138,14 @@ Papa.parse('./produtividade.csv', {
 
       tabela.innerHTML += `
         <tr>
-          <td>${item.nome}</td>
 
-          <td>${item.total}</td>
+          <td>
+            ${item.nome}
+          </td>
+
+          <td>
+            ${item.total}
+          </td>
 
           <td>
             ${
@@ -108,7 +158,35 @@ Papa.parse('./produtividade.csv', {
               : 'Médio'
             }
           </td>
+
         </tr>
+      `;
+
+    });
+
+    const pausas =
+      document.getElementById(
+        'pausasContainer'
+      );
+
+    pausas.innerHTML = '';
+
+    ranking.slice(0, 10).forEach((item, index) => {
+
+      pausas.innerHTML += `
+        <div class="pausa-item">
+
+          <strong>
+            ${item.nome}
+          </strong>
+
+          <div>
+            Pausa:
+            12:${String(index).padStart(2, '0')}
+            às 13:00
+          </div>
+
+        </div>
       `;
 
     });
@@ -130,7 +208,7 @@ Papa.parse('./produtividade.csv', {
           datasets: [{
 
             label:
-              'Pedidos',
+              'Pedidos Bipados',
 
             data:
               ranking.map(
@@ -145,11 +223,108 @@ Papa.parse('./produtividade.csv', {
       }
     );
 
+    let excelente = 0;
+    let bom = 0;
+    let medio = 0;
+    let ruim = 0;
+
+    ranking.forEach(item => {
+
+      if (item.total > 1000) {
+        excelente++;
+      }
+      else if (item.total > 800) {
+        bom++;
+      }
+      else if (item.total < 500) {
+        ruim++;
+      }
+      else {
+        medio++;
+      }
+
+    });
+
+    new Chart(
+      document.getElementById(
+        'pieChart'
+      ),
+      {
+        type: 'doughnut',
+
+        data: {
+
+          labels: [
+            'Excelente',
+            'Bom',
+            'Médio',
+            'Ruim'
+          ],
+
+          datasets: [{
+
+            data: [
+              excelente,
+              bom,
+              medio,
+              ruim
+            ],
+
+            backgroundColor: [
+              '#16a34a',
+              '#d97706',
+              '#6b7280',
+              '#dc2626'
+            ]
+
+          }]
+        }
+      }
+    );
+
+    new Chart(
+      document.getElementById(
+        'hourChart'
+      ),
+      {
+        type: 'line',
+
+        data: {
+
+          labels:
+            Object.keys(horas),
+
+          datasets: [{
+
+            label:
+              'Pedidos por Hora',
+
+            data:
+              Object.values(horas),
+
+            borderColor:
+              '#2563eb',
+
+            backgroundColor:
+              'rgba(37,99,235,0.2)',
+
+            fill: true,
+
+            tension: 0.4
+
+          }]
+        }
+      }
+    );
+
   },
 
   error: function(err) {
 
-    console.error(err);
+    console.error(
+      'Erro CSV:',
+      err
+    );
 
   }
 

@@ -1,136 +1,260 @@
-function toggleDarkMode() {
-  document.body.classList.toggle('dark-mode');
-}
+<!DOCTYPE html>
+<html lang="pt-BR">
 
-Papa.parse('./produtividade.csv', {
+<head>
 
-  download: true,
+  <meta charset="UTF-8">
 
-  header: true,
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
-  delimiter: ';',
+  <title>Dashboard EXP</title>
 
-  skipEmptyLines: true,
+  <link
+    rel="stylesheet"
+    href="style.css"
+  >
 
-  complete: function(results) {
+</head>
 
-    console.log(results.data);
+<body>
 
-    const dados = results.data;
+  <!-- TOPO -->
+  <div class="topbar">
 
-    const colaboradores = {};
+    <div>
 
-    dados.forEach(item => {
+      <h1>
+        Dashboard EXP
+      </h1>
 
-      const nome =
-        item['Nome do Usuário'];
+      <p>
+        Dashboard operacional
+      </p>
 
-      if (!nome) return;
+    </div>
 
-      const nomeLimpo =
-        nome.trim();
+    <button
+      class="toggle-btn"
+      onclick="toggleDarkMode()"
+    >
+      🌙 Claro / Escuro
+    </button>
 
-      if (!colaboradores[nomeLimpo]) {
-        colaboradores[nomeLimpo] = 0;
-      }
+  </div>
 
-      colaboradores[nomeLimpo]++;
+  <!-- KPIs -->
+  <div class="cards">
 
-    });
+    <div class="card">
 
-    const ranking =
-      Object.entries(colaboradores)
-      .map(([nome, total]) => ({
-        nome,
-        total
-      }))
-      .sort((a, b) =>
-        b.total - a.total
-      );
+      <div class="kpi-title">
+        Total Bipado
+      </div>
 
-    document.getElementById(
-      'kpiTotal'
-    ).innerText =
-      ranking.reduce(
-        (acc, item) =>
-          acc + item.total,
+      <div
+        class="kpi-value"
+        id="kpiTotal"
+      >
         0
-      );
+      </div>
 
-    document.getElementById(
-      'kpiTop'
-    ).innerText =
-      ranking[0]?.nome || '-';
+    </div>
 
-    document.getElementById(
-      'kpiMedia'
-    ).innerText =
-      Math.round(
-        ranking.reduce(
-          (acc, item) =>
-            acc + item.total,
-          0
-        ) / ranking.length
-      );
+    <div class="card">
 
-    document.getElementById(
-      'kpiRuim'
-    ).innerText =
-      ranking.filter(
-        item => item.total < 500
-      ).length;
+      <div class="kpi-title">
+        Melhor Operador
+      </div>
 
-    const tabela =
-      document.getElementById(
-        'tabelaColaboradores'
-      );
+      <div
+        class="kpi-value"
+        id="kpiTop"
+      >
+        -
+      </div>
 
-    tabela.innerHTML = '';
+    </div>
 
-    ranking.forEach(item => {
+    <div class="card">
 
-      tabela.innerHTML += `
-        <tr>
-          <td>${item.nome}</td>
-          <td>${item.total}</td>
-          <td>${item.total > 1000 ? 'Excelente' :
-                item.total > 800 ? 'Bom' :
-                item.total < 500 ? 'Ruim' :
-                'Médio'}
-          </td>
-        </tr>
-      `;
+      <div class="kpi-title">
+        Média da Equipe
+      </div>
 
-    });
+      <div
+        class="kpi-value"
+        id="kpiMedia"
+      >
+        0
+      </div>
 
-    new Chart(
-      document.getElementById(
-        'rankingChart'
-      ),
-      {
-        type: 'bar',
+    </div>
 
-        data: {
-          labels:
-            ranking.map(r => r.nome),
+    <div class="card">
 
-          datasets: [{
-            label:
-              'Pedidos',
+      <div class="kpi-title">
+        Abaixo da Meta
+      </div>
 
-            data:
-              ranking.map(r => r.total)
-          }]
-        }
-      }
-    );
+      <div
+        class="kpi-value"
+        id="kpiRuim"
+      >
+        0
+      </div>
 
-  },
+    </div>
 
-  error: function(err) {
+  </div>
 
-    console.error(err);
+  <!-- GRAFICOS -->
+  <div class="layout">
 
-  }
+    <div class="card">
 
-});
+      <h3>
+        Ranking de Produtividade
+      </h3>
+
+      <canvas id="rankingChart"></canvas>
+
+    </div>
+
+    <div class="card">
+
+      <h3>
+        Status da Equipe
+      </h3>
+
+      <canvas id="pieChart"></canvas>
+
+    </div>
+
+  </div>
+
+  <!-- HORARIOS -->
+  <div class="layout">
+
+    <div class="card">
+
+      <h3>
+        Produtividade por Horário
+      </h3>
+
+      <canvas id="hourChart"></canvas>
+
+    </div>
+
+    <div class="card">
+
+      <h3>
+        Jornada Operacional
+      </h3>
+
+      <div class="info-box">
+
+        <strong>
+          Início
+        </strong>
+
+        <div class="info-value">
+          09:00
+        </div>
+
+      </div>
+
+      <div class="info-box">
+
+        <strong>
+          Intervalo
+        </strong>
+
+        <div class="info-value">
+          12:00 às 13:00
+        </div>
+
+      </div>
+
+      <div class="info-box">
+
+        <strong>
+          Encerramento
+        </strong>
+
+        <div class="info-value">
+          18:00
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- TABELA -->
+  <div class="layout-bottom">
+
+    <div class="card">
+
+      <h3>
+        Ranking
+      </h3>
+
+      <table>
+
+        <thead>
+
+          <tr>
+
+            <th>
+              Colaborador
+            </th>
+
+            <th>
+              Pedidos
+            </th>
+
+            <th>
+              Status
+            </th>
+
+          </tr>
+
+        </thead>
+
+        <tbody id="tabelaColaboradores">
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+    <!-- PAUSAS -->
+    <div class="card">
+
+      <h3>
+        Pausas
+      </h3>
+
+      <div id="pausasContainer">
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- SCRIPTS -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+
+  <script src="script.js"></script>
+
+</body>
+
+</html>
