@@ -17,58 +17,39 @@
     href="style.css"
   >
 
-  <!-- CHART -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-  <!-- CSV -->
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 
 </head>
 
 <body>
 
-  <div class="dashboard">
+  <!-- TOPO -->
+  <div class="topbar">
 
-    <!-- SIDEBAR -->
-    <aside class="sidebar">
+    <div>
 
-      <div>
+      <h1>
+        Dashboard EXP
+      </h1>
 
-        <div class="logo">
+      <p>
+        Controle Operacional
+      </p>
 
-          <h1>
-            Dashboard EXP
-          </h1>
+    </div>
 
-          <p>
-            Controle Operacional
-          </p>
+    <div class="top-right">
 
-        </div>
+      <button
+        class="toggle-btn"
+        onclick="toggleDarkMode()"
+      >
+        🌙 Dark Mode
+      </button>
 
-        <div class="menu">
-
-          <div class="menu-item">
-            📦 Produtividade
-          </div>
-
-          <div class="menu-item">
-            📈 Ranking
-          </div>
-
-          <div class="menu-item">
-            ⏱ Pausas
-          </div>
-
-          <div class="menu-item">
-            👥 Colaboradores
-          </div>
-
-        </div>
-
-      </div>
-
-      <div class="bottom-info">
+      <div class="datetime">
 
         <div
           class="clock"
@@ -84,160 +65,147 @@
           --
         </div>
 
-        <button
-          class="toggle-btn"
-          onclick="toggleDarkMode()"
-        >
-          🌙 Claro / Escuro
-        </button>
-
       </div>
 
-    </aside>
-
-    <!-- CONTEUDO -->
-    <main class="content">
-
-      <!-- KPIs -->
-      <div class="cards">
-
-        <div class="card">
-
-          <div class="kpi-title">
-            Total Bipado
-          </div>
-
-          <div
-            class="kpi-value"
-            id="kpiTotal"
-          >
-            0
-          </div>
-
-        </div>
-
-        <div class="card">
-
-          <div class="kpi-title">
-            Melhor Operador
-          </div>
-
-          <div
-            class="kpi-value"
-            id="kpiTop"
-          >
-            -
-          </div>
-
-        </div>
-
-        <div class="card">
-
-          <div class="kpi-title">
-            Média
-          </div>
-
-          <div
-            class="kpi-value"
-            id="kpiMedia"
-          >
-            0
-          </div>
-
-        </div>
-
-        <div class="card">
-
-          <div class="kpi-title">
-            Abaixo da Meta
-          </div>
-
-          <div
-            class="kpi-value"
-            id="kpiRuim"
-          >
-            0
-          </div>
-
-        </div>
-
-      </div>
-
-      <!-- GRAFICOS -->
-      <div class="grid">
-
-        <div class="card">
-
-          <h2>
-            TOP 5 Operadores
-          </h2>
-
-          <canvas id="rankingChart"></canvas>
-
-        </div>
-
-        <div class="card">
-
-          <h2>
-            Pausas
-          </h2>
-
-          <div id="pausasContainer"></div>
-
-        </div>
-
-      </div>
-
-      <!-- BAIXO -->
-      <div class="grid">
-
-        <div class="card">
-
-          <h2>
-            Produção por Hora
-          </h2>
-
-          <canvas id="hourChart"></canvas>
-
-        </div>
-
-        <div class="card">
-
-          <h2>
-            Colaboradores
-          </h2>
-
-          <table>
-
-            <thead>
-
-              <tr>
-
-                <th>Nome</th>
-
-                <th>Qtd</th>
-
-                <th>Status</th>
-
-              </tr>
-
-            </thead>
-
-            <tbody id="tabelaColaboradores">
-
-            </tbody>
-
-          </table>
-
-        </div>
-
-      </div>
-
-    </main>
+    </div>
 
   </div>
 
-  <!-- SCRIPT -->
+  <!-- KPIS -->
+  <div class="cards">
+
+    <div class="card">
+
+      <div class="kpi-title">
+        Total Bipado
+      </div>
+
+      <div
+        class="kpi-value"
+        id="kpiTotal"
+      >
+        0
+      </div>
+
+    </div>
+
+    <div class="card">
+
+      <div class="kpi-title">
+        Melhor Operador
+      </div>
+
+      <div
+        class="kpi-value"
+        id="kpiTop"
+      >
+        -
+      </div>
+
+    </div>
+
+    <div class="card">
+
+      <div class="kpi-title">
+        Média
+      </div>
+
+      <div
+        class="kpi-value"
+        id="kpiMedia"
+      >
+        0
+      </div>
+
+    </div>
+
+    <div class="card">
+
+      <div class="kpi-title">
+        Abaixo Meta
+      </div>
+
+      <div
+        class="kpi-value"
+        id="kpiRuim"
+      >
+        0
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- GRAFICOS -->
+  <div class="grid">
+
+    <div class="card">
+
+      <h2>
+        TOP 5 Operadores
+      </h2>
+
+      <canvas id="rankingChart"></canvas>
+
+    </div>
+
+    <div class="card">
+
+      <h2>
+        Pausas
+      </h2>
+
+      <div id="pausasContainer"></div>
+
+    </div>
+
+  </div>
+
+  <!-- BAIXO -->
+  <div class="grid">
+
+    <div class="card">
+
+      <h2>
+        Produção por Hora
+      </h2>
+
+      <canvas id="hourChart"></canvas>
+
+    </div>
+
+    <div class="card">
+
+      <h2>
+        Colaboradores
+      </h2>
+
+      <table>
+
+        <thead>
+
+          <tr>
+
+            <th>Nome</th>
+
+            <th>Qtd</th>
+
+            <th>Status</th>
+
+          </tr>
+
+        </thead>
+
+        <tbody id="tabelaColaboradores">
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  </div>
+
   <script src="script.js"></script>
 
 </body>

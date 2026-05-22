@@ -2,6 +2,8 @@ function toggleDarkMode() {
   document.body.classList.toggle('dark-mode');
 }
 
+/* RELOGIO */
+
 function atualizarRelogio() {
 
   const agora = new Date();
@@ -32,6 +34,8 @@ setInterval(
 );
 
 atualizarRelogio();
+
+/* CSV */
 
 Papa.parse('./produtividade.csv', {
 
@@ -134,11 +138,13 @@ Papa.parse('./produtividade.csv', {
         b.total - a.total
       );
 
+    /* KPI */
+
     document.getElementById(
       'kpiTotal'
     ).innerText =
       ranking.reduce(
-        (acc,item) =>
+        (acc,item)=>
           acc + item.total,
         0
       );
@@ -165,6 +171,8 @@ Papa.parse('./produtividade.csv', {
       ranking.filter(
         item => item.total < 500
       ).length;
+
+    /* TABELA */
 
     const tabela =
       document.getElementById(
@@ -210,6 +218,8 @@ Papa.parse('./produtividade.csv', {
 
     });
 
+    /* PAUSAS */
+
     const pausas =
       document.getElementById(
         'pausasContainer'
@@ -237,6 +247,31 @@ Papa.parse('./produtividade.csv', {
 
     });
 
+    /* CORES GRAFICO */
+
+    const top5 =
+      ranking.slice(0,5);
+
+    const cores = top5.map(item => {
+
+      if(item.total > 1000){
+        return '#166534';
+      }
+
+      if(item.total > 800){
+        return '#4ade80';
+      }
+
+      if(item.total < 500){
+        return '#dc2626';
+      }
+
+      return '#facc15';
+
+    });
+
+    /* GRAFICO */
+
     new Chart(
       document.getElementById(
         'rankingChart'
@@ -247,27 +282,29 @@ Papa.parse('./produtividade.csv', {
         data:{
 
           labels:
-            ranking
-              .slice(0,5)
-              .map(r => r.nome),
+            top5.map(
+              r => r.nome
+            ),
 
           datasets:[{
 
             label:'Pedidos',
 
             data:
-              ranking
-                .slice(0,5)
-                .map(r => r.total),
+              top5.map(
+                r => r.total
+              ),
 
-            backgroundColor:'#2563eb',
-            borderRadius:12
+            backgroundColor: cores,
+
+            borderRadius:14
 
           }]
         },
 
         options:{
           responsive:true,
+
           plugins:{
             legend:{
               labels:{
@@ -280,6 +317,8 @@ Papa.parse('./produtividade.csv', {
         }
       }
     );
+
+    /* GRAFICO HORA */
 
     new Chart(
       document.getElementById(
