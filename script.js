@@ -219,22 +219,26 @@ Papa.parse('./produtividade.csv', {
       {
         type: 'bar',
 
-        data: {
+      data: {
 
-          labels:
-            ranking.map(
-              r => r.nome
-            ),
+  labels:
+    ranking
+      .slice(0, 5)
+      .map(
+        r => r.nome
+      ),
 
-          datasets: [{
+  datasets: [{
 
-            label:
-              'Pedidos Bipados',
+    label:
+      'Pedidos Bipados',
 
-            data:
-              ranking.map(
-                r => r.total
-              ),
+    data:
+      ranking
+        .slice(0, 5)
+        .map(
+          r => r.total
+        ),
 
             backgroundColor:
               '#2563eb'
