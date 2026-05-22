@@ -21,7 +21,6 @@
 
 <body>
 
-  <!-- TOPO -->
   <div class="topbar">
 
     <div>
@@ -36,10 +35,7 @@
 
     </div>
 
-    <button
-      class="toggle-btn"
-      onclick="toggleDarkMode()"
-    >
+    <button onclick="toggleDarkMode()">
       🌙 Claro / Escuro
     </button>
 
@@ -49,210 +45,117 @@
   <div class="cards">
 
     <div class="card">
+      <h3>Total Bipado</h3>
 
-      <div class="kpi-title">
-        Total Bipado
-      </div>
-
-      <div
-        class="kpi-value"
-        id="kpiTotal"
-      >
+      <div id="kpiTotal">
         0
       </div>
-
     </div>
 
     <div class="card">
+      <h3>Melhor Operador</h3>
 
-      <div class="kpi-title">
-        Melhor Operador
-      </div>
-
-      <div
-        class="kpi-value"
-        id="kpiTop"
-      >
+      <div id="kpiTop">
         -
       </div>
-
     </div>
 
     <div class="card">
+      <h3>Média</h3>
 
-      <div class="kpi-title">
-        Média da Equipe
-      </div>
-
-      <div
-        class="kpi-value"
-        id="kpiMedia"
-      >
+      <div id="kpiMedia">
         0
       </div>
-
     </div>
 
     <div class="card">
+      <h3>Abaixo Meta</h3>
 
-      <div class="kpi-title">
-        Abaixo da Meta
-      </div>
-
-      <div
-        class="kpi-value"
-        id="kpiRuim"
-      >
+      <div id="kpiRuim">
         0
       </div>
-
     </div>
 
   </div>
 
-  <!-- GRAFICOS -->
-  <div class="layout">
+  <!-- GRAFICO -->
+  <div class="card">
 
-    <div class="card">
+    <h2>
+      Ranking
+    </h2>
 
-      <h3>
-        Ranking de Produtividade
-      </h3>
-
-      <canvas id="rankingChart"></canvas>
-
-    </div>
-
-    <div class="card">
-
-      <h3>
-        Status da Equipe
-      </h3>
-
-      <canvas id="pieChart"></canvas>
-
-    </div>
+    <canvas id="rankingChart"></canvas>
 
   </div>
 
-  <!-- HORARIOS -->
-  <div class="layout">
+  <!-- HORAS -->
+  <div class="card">
 
-    <div class="card">
+    <h2>
+      Produção por Hora
+    </h2>
 
-      <h3>
-        Produtividade por Horário
-      </h3>
-
-      <canvas id="hourChart"></canvas>
-
-    </div>
-
-    <div class="card">
-
-      <h3>
-        Jornada Operacional
-      </h3>
-
-      <div class="info-box">
-
-        <strong>
-          Início
-        </strong>
-
-        <div class="info-value">
-          09:00
-        </div>
-
-      </div>
-
-      <div class="info-box">
-
-        <strong>
-          Intervalo
-        </strong>
-
-        <div class="info-value">
-          12:00 às 13:00
-        </div>
-
-      </div>
-
-      <div class="info-box">
-
-        <strong>
-          Encerramento
-        </strong>
-
-        <div class="info-value">
-          18:00
-        </div>
-
-      </div>
-
-    </div>
+    <canvas id="hourChart"></canvas>
 
   </div>
 
   <!-- TABELA -->
-  <div class="layout-bottom">
+  <div class="card">
 
-    <div class="card">
+    <h2>
+      Colaboradores
+    </h2>
 
-      <h3>
-        Ranking
-      </h3>
+    <table>
 
-      <table>
+      <thead>
 
-        <thead>
+        <tr>
 
-          <tr>
+          <th>
+            Nome
+          </th>
 
-            <th>
-              Colaborador
-            </th>
+          <th>
+            Pedidos
+          </th>
 
-            <th>
-              Pedidos
-            </th>
+          <th>
+            Status
+          </th>
 
-            <th>
-              Status
-            </th>
+        </tr>
 
-          </tr>
+      </thead>
 
-        </thead>
+      <tbody id="tabelaColaboradores">
 
-        <tbody id="tabelaColaboradores">
+      </tbody>
 
-        </tbody>
+    </table>
 
-      </table>
+  </div>
 
-    </div>
+  <!-- PAUSAS -->
+  <div class="card">
 
-    <!-- PAUSAS -->
-    <div class="card">
+    <h2>
+      Pausas
+    </h2>
 
-      <h3>
-        Pausas
-      </h3>
-
-      <div id="pausasContainer">
-
-      </div>
+    <div id="pausasContainer">
 
     </div>
 
   </div>
 
-  <!-- SCRIPTS -->
+  <!-- LIBS -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 
+  <!-- SCRIPT -->
   <script src="script.js"></script>
 
 </body>
